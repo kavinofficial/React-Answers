@@ -1,109 +1,71 @@
-ERROR HANDLING
+import React, { Component } from 'react';
 
-MYCOMPONENTS.JS
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Check error message.</div>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+
+
+
+
+// App.js
 import React from 'react';
+import ErrorBoundary from './ErrorBoundary';
+import List from './List';
 
-const MyComponent = () => {
-  const numberList = [1, 2, 3, 4, 5];
+
+const App = () => {
+  const data = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 
   return (
     <div>
-      <h1>Number List</h1>
-      <ul>
-        {numberList.map((number) => (
-          <li key={number}>{number}</li>
-        ))}
-      </ul>
+      <h1>My App</h1>
+      <ErrorBoundary>
+        <List data={data} />
+      </ErrorBoundary>
     </div>
   );
 };
 
-export default MyComponent;
+export default App;
 
 
 
 
-ITEMLIST
 import React from 'react';
 
-const ItemList = ({ items }) => {
-  return (
-    <div>
-      <h2>List of Items</h2>
-      <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default ItemList;
-
-
-APP.JS
-import React from 'react';
-
-const ItemList = ({ items }) => {
-  if (!Array.isArray(items) || items.length === 0) {
-    return <div>No items to display</div>;
+const List = ({ data }) => {
+  if (data === null) {
+    throw new Error('Data is null');
   }
 
   return (
-    <div>
-      <h2>List of Items</h2>
-      <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {data.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
   );
 };
 
-export default ItemList;
-
-
-APP.CSS
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-
+export default List;
