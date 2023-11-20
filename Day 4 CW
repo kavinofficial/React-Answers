@@ -1,57 +1,76 @@
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
+import React, { Component } from 'react';
 
-export default function Form() {
-  const [name, setName] = useState('');
-  const [selectedFruit, setSelectedFruit] = useState(null); // Updated state variable
-  const [greet, setGreet] = useState('');
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // console.log(selectedFruit);
-    console.log(`Hello, ${name}! Your favorite fruit is ${selectedFruit.label}.`);
-    setGreet(`Hello, ${name}! Your favorite fruit is ${selectedFruit.label}.`);
-  };
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Check error message.</div>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+
+
+
+
+
+
+
+
+// App.js
+import React from 'react';
+import ErrorBoundary from './ErrorBoundary';
+import List from './List';
+
+
+const App = () => {
+  const data = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 
   return (
     <div>
-    <form onSubmit={handleSubmit}>
-      <Typography variant='h2'>Enter your favourite fruit:</Typography><br />
-      <TextField
-        id="name"
-        label="Name"
-        type="Name"
-        autoComplete="current-password"
-        variant="standard"
-        onChange={(e) => setName(e.target.value)}
-      /><br />
-      <br />
-      <br />
-      <Autocomplete
-        id="autocomplete"
-        options={fruits}
-        getOptionLabel={(option) => option.label}
-        renderInput={(params) => (
-          <TextField {...params} label="Choose a fruit" />
-        )}
-        onChange={(_, value) => setSelectedFruit(value)} // Store the selected value in state
-        value={selectedFruit}
-      />
-
-      <Button variant="contained" type='submit' id='button' style={{ marginTop: '10px' }}>Submit</Button>
-    </form>
-    <Typography variant='body1' style={{marginTop:'10px'}}>{greet}</Typography>
+      <h1>My App</h1>
+      <ErrorBoundary>
+        <List data={data} />
+      </ErrorBoundary>
     </div>
   );
-}
+};
 
-const fruits = [
-  { label: 'Apple' },
-  { label: 'Banana' },
-  { label: 'Cherry' },
-  { label: 'Durian' },
-  { label: 'ElderBerry' },
-];
+export default App;
+
+
+
+
+
+import React from 'react';
+
+const List = ({ data }) => {
+  if (data === null) {
+    throw new Error('Data is null');
+  }
+
+  return (
+    <ul>
+      {data.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+};
+
+export default List;
