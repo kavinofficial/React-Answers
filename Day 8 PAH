@@ -1,0 +1,59 @@
+// index.js
+
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider, connect } from 'react-redux';
+const store = createStore(cartReducer);
+const cartReducer = (state = [], action) => {
+  switch (action.type) {
+    case 'ADD_TO_CART':
+      return [...state, action.payload];
+    case 'REMOVE_FROM_CART':
+      return state.filter(item => item.id !== action.payload);
+    case 'UPDATE_CART':
+      return state;
+    default:
+      return state;
+  }
+};
+const addToCart = item => ({
+  type: 'ADD_TO_CART',
+  payload: item,
+});
+const removeFromCart = itemId => ({
+  type: 'REMOVE_FROM_CART',
+  payload: itemId,
+});
+const updateCart = updatedItem => ({
+  type: 'UPDATE_CART',
+  payload: updatedItem,
+});
+const Cart = ({ cartItems, removeFromCart }) => {
+  return (
+    <div>
+      <h2>Your Cart</h2>
+      <ul>
+        {cartItems.map(item => (
+          <li key={item.id}>
+            {item.name} - <button onClick={() => removeFromCart(item.id)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+const mapStateToProps = state => ({
+  cartItems: state,
+});
+const ConnectedCart = connect(mapStateToProps, { removeFromCart })(Cart);
+const App = () => {
+  return (
+    <Provider store={store}>
+      <div>
+        {/* Other components */}
+        <ConnectedCart />
+      </div>
+    </Provider>
+  );
+};
+export default App;
