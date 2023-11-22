@@ -1,4 +1,4 @@
-// index.js
+// App.js
 
 import React from 'react';
 import { createStore } from 'redux';
